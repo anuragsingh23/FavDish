@@ -23,6 +23,7 @@ import android.util.Log
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import com.bumptech.glide.Glide
 import com.karumi.dexter.DexterBuilder
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
@@ -84,7 +85,12 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
                 data?.extras?.let {
                     val thumbnail: Bitmap =
                         data.extras!!.get("data") as Bitmap // Bitmap from camera
-                    mBinding.ivDishImage.setImageBitmap(thumbnail) // Set to the imageView.
+                    // mBinding.ivDishImage.setImageBitmap(thumbnail)  Set to the imageView.
+
+                    Glide.with(this)
+                        .load(thumbnail)
+                        .centerCrop()
+                        .into(mBinding.ivDishImage)
 
                     // Replace the add icon with edit icon once the image is selected.
                     mBinding.ivAddDishImage.setImageDrawable(
@@ -103,7 +109,13 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
                     // Here we will get the select image URI.
                     val selectedPhotoUri = data.data
 
-                    mBinding.ivDishImage.setImageURI(selectedPhotoUri) // Set the selected image from GALLERY to imageView.
+                    Glide.with(this)
+                        .load(selectedPhotoUri)
+                        .centerCrop()
+                        .fitCenter()
+                        .into(mBinding.ivDishImage)
+
+                   // mBinding.ivDishImage.setImageURI(selectedPhotoUri)  Set the selected image from GALLERY to imageView.
 
                     // Replace the add icon with edit icon once the image is selected.
                     mBinding.ivAddDishImage.setImageDrawable(
@@ -188,6 +200,7 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
                             Intent.ACTION_PICK,
                             MediaStore.Images.Media.EXTERNAL_CONTENT_URI
                         )
+
 
                         startActivityForResult(galleryIntent, GALLERY)
                         // END
