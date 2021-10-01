@@ -22,11 +22,15 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.provider.MediaStore
 import android.provider.Settings
+import android.text.TextUtils
 import android.util.Log
+import android.view.LayoutInflater
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.Nullable
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -41,12 +45,16 @@ import com.karumi.dexter.listener.PermissionGrantedResponse
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.karumi.dexter.listener.single.PermissionListener
+import com.tutorials.eu.favdish.databinding.DialogCustomListBinding
+import com.tutorials.eu.favdish.utils.Constants
+import com.tutorials.eu.favdish.view.adapters.CustomListItemAdapter
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.OutputStream
 import java.util.*
 import java.util.stream.DoubleStream.builder
+import kotlin.reflect.typeOf
 /**
  * A screen where we can add and update the dishes.
  */
@@ -54,7 +62,14 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
 
     private lateinit var mBinding: ActivityAddUpdateDishBinding
 
-    private var mImagePath:String=""
+    // A global variable for stored image path.
+    private var mImagePath: String = ""
+
+    // TODO Step 1: Define the custom list dialog global and initialize it in the function as it is define previously.
+    // START
+    // A global variable for the custom list dialog.
+    private lateinit var mCustomListDialog: Dialog
+    // END
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,6 +80,15 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
         setupActionBar()
 
         mBinding.ivAddDishImage.setOnClickListener(this@AddUpdateDishActivity)
+
+        mBinding.etType.setOnClickListener(this@AddUpdateDishActivity)
+        mBinding.etCategory.setOnClickListener(this@AddUpdateDishActivity)
+        mBinding.etCookingTime.setOnClickListener(this@AddUpdateDishActivity)
+
+        // TODO Step 5: Assign the click event to the Add Dish button.
+        // START
+        mBinding.btnAddDish.setOnClickListener(this@AddUpdateDishActivity)
+        // END
     }
 
     override fun onClick(v: View) {
@@ -76,6 +100,117 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
                 customImageSelectionDialog()
                 return
             }
+
+            R.id.et_type -> {
+                customItemsListDialog(
+                    resources.getString(R.string.title_select_dish_type),
+                    Constants.dishTypes(),
+                    Constants.DISH_TYPE
+                )
+                return
+            }
+
+            R.id.et_category -> {
+                customItemsListDialog(
+                    resources.getString(R.string.title_select_dish_category),
+                    Constants.dishCategories(),
+                    Constants.DISH_CATEGORY
+                )
+                return
+            }
+
+            R.id.et_cooking_time -> {
+
+                customItemsListDialog(
+                    resources.getString(R.string.title_select_dish_cooking_time),
+                    Constants.dishCookTime(),
+                    Constants.DISH_COOKING_TIME
+                )
+                return
+            }
+
+            // TODO Step 6: Perform the action on button click.
+            // START
+            R.id.btn_add_dish -> {
+
+                // Define the local variables and get the EditText values.
+                // For Dish Image we have the global variable defined already.
+
+                val title = mBinding.etTitle.text.toString().trim { it <= ' ' }
+                val type = mBinding.etType.text.toString().trim { it <= ' ' }
+                val category = mBinding.etCategory.text.toString().trim { it <= ' ' }
+                val ingredients = mBinding.etIngredients.text.toString().trim { it <= ' ' }
+                val cookingTimeInMinutes = mBinding.etCookingTime.text.toString().trim { it <= ' ' }
+                val cookingDirection = mBinding.etDirectionToCook.text.toString().trim { it <= ' ' }
+
+                when {
+
+                    TextUtils.isEmpty(mImagePath) -> {
+                        Toast.makeText(
+                            this@AddUpdateDishActivity,
+                            resources.getString(R.string.err_msg_select_dish_image),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+
+                    TextUtils.isEmpty(title) -> {
+                        Toast.makeText(
+                            this@AddUpdateDishActivity,
+                            resources.getString(R.string.err_msg_enter_dish_title),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+
+                    TextUtils.isEmpty(type) -> {
+                        Toast.makeText(
+                            this@AddUpdateDishActivity,
+                            resources.getString(R.string.err_msg_select_dish_type),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+
+                    TextUtils.isEmpty(category) -> {
+                        Toast.makeText(
+                            this@AddUpdateDishActivity,
+                            resources.getString(R.string.err_msg_select_dish_category),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    TextUtils.isEmpty(ingredients) -> {
+                        Toast.makeText(
+                            this@AddUpdateDishActivity,
+                            resources.getString(R.string.err_msg_enter_dish_ingredients),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    TextUtils.isEmpty(cookingTimeInMinutes) -> {
+                        Toast.makeText(
+                            this@AddUpdateDishActivity,
+                            resources.getString(R.string.err_msg_select_dish_cooking_time),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    TextUtils.isEmpty(cookingDirection) -> {
+                        Toast.makeText(
+                            this@AddUpdateDishActivity,
+                            resources.getString(R.string.err_msg_enter_dish_cooking_instructions),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    else -> {
+
+                        // TODO Step 8: Show the Toast Message for now that you dish entry is valid.
+                        // START
+                        Toast.makeText(
+                            this@AddUpdateDishActivity,
+                            "All the entries are valid.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        // END
+                    }
+                }
+            }
+            // END
         }
     }
 
@@ -101,19 +236,17 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
                 data?.extras?.let {
                     val thumbnail: Bitmap =
                         data.extras!!.get("data") as Bitmap // Bitmap from camera
-                    // mBinding.ivDishImage.setImageBitmap(thumbnail)  Set to the imageView.
 
-                    Glide.with(this)
+                    // Set Capture Image bitmap to the imageView using Glide
+                    Glide.with(this@AddUpdateDishActivity)
                         .load(thumbnail)
                         .centerCrop()
                         .into(mBinding.ivDishImage)
 
+                    mImagePath = saveImageToInternalStorage(thumbnail)
+                    Log.i("ImagePath", mImagePath)
 
-                    mImagePath=saveImageTOInternalStorage(thumbnail)
-
-                    Log.i("ImagePAth",mImagePath)
-
-                    // Replace the add icon with edit icon once the image is selected.
+                    // Replace the add icon with edit icon once the image is loaded.
                     mBinding.ivAddDishImage.setImageDrawable(
                         ContextCompat.getDrawable(
                             this@AddUpdateDishActivity,
@@ -121,50 +254,45 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
                         )
                     )
                 }
-            }
-            // TODO Step 3: Get the selected image from gallery. The selected will be in form of URI so set it to the Dish ImageView.
-            // START
-            else if (requestCode == GALLERY) {
+            } else if (requestCode == GALLERY) {
 
                 data?.let {
                     // Here we will get the select image URI.
                     val selectedPhotoUri = data.data
 
-                    Glide.with(this)
+                    // Set Selected Image URI to the imageView using Glide
+                    Glide.with(this@AddUpdateDishActivity)
                         .load(selectedPhotoUri)
                         .centerCrop()
-                        .fitCenter()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .listener(object:RequestListener<Drawable>{
+                        .listener(object : RequestListener<Drawable> {
                             override fun onLoadFailed(
-                                e: GlideException?,
+                                @Nullable e: GlideException?,
                                 model: Any?,
                                 target: Target<Drawable>?,
-                                isFirstResource: Boolean,
+                                isFirstResource: Boolean
                             ): Boolean {
-                                Log.e("TAG","Error Loading Image")
-                                return false
+                                // log exception
+                                Log.e("TAG", "Error loading image", e)
+                                return false // important to return false so the error placeholder can be placed
                             }
 
                             override fun onResourceReady(
-                                resource: Drawable?,
+                                resource: Drawable,
                                 model: Any?,
                                 target: Target<Drawable>?,
                                 dataSource: DataSource?,
-                                isFirstResource: Boolean,
+                                isFirstResource: Boolean
                             ): Boolean {
-                               resource?.let {
-                                   val bitmap:Bitmap=resource.toBitmap()
-                                   mImagePath=saveImageTOInternalStorage(bitmap)
-                                   Log.i("ImagePath",mImagePath)
-                               }
-                               return false
-                            }
 
+                                val bitmap: Bitmap = resource.toBitmap()
+
+                                mImagePath = saveImageToInternalStorage(bitmap)
+                                Log.i("ImagePath", mImagePath)
+                                return false
+                            }
                         })
                         .into(mBinding.ivDishImage)
-
-                   // mBinding.ivDishImage.setImageURI(selectedPhotoUri)  Set the selected image from GALLERY to imageView.
 
                     // Replace the add icon with edit icon once the image is selected.
                     mBinding.ivAddDishImage.setImageDrawable(
@@ -175,7 +303,6 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
                     )
                 }
             }
-            // END
         } else if (resultCode == Activity.RESULT_CANCELED) {
             Log.e("Cancelled", "Cancelled")
         }
@@ -191,7 +318,6 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
             onBackPressed()
         }
     }
-
 
     /**
      * A function to launch the custom image selection dialog.
@@ -215,8 +341,9 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
                 )
                 .withListener(object : MultiplePermissionsListener {
                     override fun onPermissionsChecked(report: MultiplePermissionsReport?) {
-                        // Here after all the permission are granted launch the CAMERA to capture an image.
+
                         report?.let {
+                            // Here after all the permission are granted launch the CAMERA to capture an image.
                             if (report.areAllPermissionsGranted()) {
 
                                 val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
@@ -239,23 +366,24 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
 
         binding.tvGallery.setOnClickListener {
 
-            Dexter.withActivity(this)
-                .withPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+            Dexter.withActivity(this@AddUpdateDishActivity)
+                .withPermission(
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                )
                 .withListener(object : PermissionListener {
-                    override fun onPermissionGranted(response: PermissionGrantedResponse) {
-                        // TODO Step 2: Launch the gallery for Image selection using the constant.
-                        // START
+
+                    override fun onPermissionGranted(response: PermissionGrantedResponse?) {
+
+                        // Here after all the permission are granted launch the gallery to select and image.
                         val galleryIntent = Intent(
                             Intent.ACTION_PICK,
                             MediaStore.Images.Media.EXTERNAL_CONTENT_URI
                         )
 
-
                         startActivityForResult(galleryIntent, GALLERY)
-                        // END
                     }
 
-                    override fun onPermissionDenied(response: PermissionDeniedResponse) {
+                    override fun onPermissionDenied(response: PermissionDeniedResponse?) {
                         Toast.makeText(
                             this@AddUpdateDishActivity,
                             "You have denied the storage permission to select image.",
@@ -264,13 +392,12 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
                     }
 
                     override fun onPermissionRationaleShouldBeShown(
-                        permission: PermissionRequest,
-                        token: PermissionToken
+                        permission: PermissionRequest?,
+                        token: PermissionToken?
                     ) {
                         showRationalDialogForPermissions()
                     }
-                })
-                .onSameThread()
+                }).onSameThread()
                 .check()
 
             dialog.dismiss()
@@ -279,7 +406,6 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
         //Start the dialog and display it on screen.
         dialog.show()
     }
-
 
     /**
      * A function used to show the alert dialog when the permissions are denied and need to allow it from settings app info.
@@ -303,32 +429,112 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
                 dialog.dismiss()
             }.show()
     }
-    private fun saveImageTOInternalStorage(bitmap: Bitmap):String{
-        val wrapper=ContextWrapper(applicationContext)
 
-        var file=wrapper.getDir(IMAGE_DIRECTORY, Context.MODE_PRIVATE)
-        file= File(file,"${UUID.randomUUID()}.jpg")
+    /**
+     * A function to save a copy of an image to internal storage for FavDishApp to use.
+     *
+     * @param bitmap
+     */
+    private fun saveImageToInternalStorage(bitmap: Bitmap): String {
+
+        // Get the context wrapper instance
+        val wrapper = ContextWrapper(applicationContext)
+
+        // Initializing a new file
+        // The bellow line return a directory in internal storage
+        /**
+         * The Mode Private here is
+         * File creation mode: the default mode, where the created file can only
+         * be accessed by the calling application (or all applications sharing the
+         * same user ID).
+         */
+        var file = wrapper.getDir(IMAGE_DIRECTORY, Context.MODE_PRIVATE)
+
+        // Mention a file name to save the image
+        file = File(file, "${UUID.randomUUID()}.jpg")
 
         try {
-            val stream:OutputStream=FileOutputStream(file)
-            bitmap.compress(Bitmap.CompressFormat.JPEG,100,stream)
+            // Get the file output stream
+            val stream: OutputStream = FileOutputStream(file)
+
+            // Compress bitmap
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+
+            // Flush the stream
             stream.flush()
+
+            // Close stream
             stream.close()
-        }catch (e:IOException){
+        } catch (e: IOException) { // Catch the exception
             e.printStackTrace()
         }
+
+        // Return the saved image absolute path
         return file.absolutePath
     }
 
+    /**
+     * A function to launch the custom list dialog.
+     *
+     * @param title - Define the title at runtime according to the list items.
+     * @param itemsList - List of items to be selected.
+     * @param selection - By passing this param you can identify the list item selection.
+     */
+    private fun customItemsListDialog(title: String, itemsList: List<String>, selection: String) {
+        // TODO Step 2: Replace the dialog variable with the global variable.
+        mCustomListDialog = Dialog(this@AddUpdateDishActivity)
 
+        val binding: DialogCustomListBinding = DialogCustomListBinding.inflate(layoutInflater)
+
+        /*Set the screen content from a layout resource.
+        The resource will be inflated, adding all top-level views to the screen.*/
+        mCustomListDialog.setContentView(binding.root)
+
+        binding.tvTitle.text = title
+
+        // Set the LayoutManager that this RecyclerView will use.
+        binding.rvList.layoutManager = LinearLayoutManager(this@AddUpdateDishActivity)
+        // Adapter class is initialized and list is passed in the param.
+        val adapter = CustomListItemAdapter(this@AddUpdateDishActivity, itemsList, selection)
+        // adapter instance is set to the recyclerview to inflate the items.
+        binding.rvList.adapter = adapter
+        //Start the dialog and display it on screen.
+        mCustomListDialog.show()
+    }
+
+    // TODO Step 3: Create a function to set the selected item to the view.
+    /**
+     * A function to set the selected item to the view.
+     *
+     * @param item - Selected Item.
+     * @param selection - Identify the selection and set it to the view accordingly.
+     */
+    fun selectedListItem(item: String, selection: String) {
+
+        when (selection) {
+
+            Constants.DISH_TYPE -> {
+                mCustomListDialog.dismiss()
+                mBinding.etType.setText(item)
+            }
+
+            Constants.DISH_CATEGORY -> {
+                mCustomListDialog.dismiss()
+                mBinding.etCategory.setText(item)
+            }
+            else -> {
+                mCustomListDialog.dismiss()
+                mBinding.etCookingTime.setText(item)
+            }
+        }
+    }
+    // END
 
     companion object {
         private const val CAMERA = 1
 
-        // TODO Step 1: Add the constant for Gallery.
-        // START
         private const val GALLERY = 2
-        // END
-        private const val IMAGE_DIRECTORY="FavDishImages"
+
+        private const val IMAGE_DIRECTORY = "FavDishImages"
     }
 }
