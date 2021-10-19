@@ -1,4 +1,5 @@
 package com.tutorials.eu.favdish.utils
+
 /**
  * This is used to define the constant values that we can use throughout the application.
  */

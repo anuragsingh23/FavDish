@@ -41,9 +41,10 @@ class AllDishesFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
-            R.id.action_add_dishes->{
-                startActivity(Intent(requireContext(),AddUpdateDishActivity::class.java))
+
+        when (item.itemId) {
+            R.id.action_add_dish -> {
+                startActivity(Intent(requireActivity(), AddUpdateDishActivity::class.java))
                 return true
             }
         }

@@ -1,18 +1,8 @@
 package com.tutorials.eu.favdish.view.activities
 
-import android.app.Dialog
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import android.view.View
-import android.widget.Toast
-import com.karumi.dexter.Dexter
-import com.tutorials.eu.favdish.R
-import com.tutorials.eu.favdish.databinding.ActivityAddUpdateDishBinding
-import com.tutorials.eu.favdish.databinding.DialogCustomImageSelectionBinding
 import android.Manifest
-import android.Manifest.permission.CAMERA
 import android.app.Activity
-import android.app.AlertDialog
+import android.app.Dialog
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.ContextWrapper
@@ -20,14 +10,16 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.Settings
 import android.text.TextUtils
 import android.util.Log
-import android.view.LayoutInflater
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
+import android.view.View
+import android.widget.Toast
 import androidx.annotation.Nullable
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -37,7 +29,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
-import com.karumi.dexter.DexterBuilder
+import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionDeniedResponse
@@ -45,6 +37,9 @@ import com.karumi.dexter.listener.PermissionGrantedResponse
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.karumi.dexter.listener.single.PermissionListener
+import com.tutorials.eu.favdish.R
+import com.tutorials.eu.favdish.databinding.ActivityAddUpdateDishBinding
+import com.tutorials.eu.favdish.databinding.DialogCustomImageSelectionBinding
 import com.tutorials.eu.favdish.databinding.DialogCustomListBinding
 import com.tutorials.eu.favdish.utils.Constants
 import com.tutorials.eu.favdish.view.adapters.CustomListItemAdapter
@@ -53,8 +48,7 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.io.OutputStream
 import java.util.*
-import java.util.stream.DoubleStream.builder
-import kotlin.reflect.typeOf
+
 /**
  * A screen where we can add and update the dishes.
  */
@@ -65,11 +59,8 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
     // A global variable for stored image path.
     private var mImagePath: String = ""
 
-    // TODO Step 1: Define the custom list dialog global and initialize it in the function as it is define previously.
-    // START
     // A global variable for the custom list dialog.
     private lateinit var mCustomListDialog: Dialog
-    // END
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,10 +76,7 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
         mBinding.etCategory.setOnClickListener(this@AddUpdateDishActivity)
         mBinding.etCookingTime.setOnClickListener(this@AddUpdateDishActivity)
 
-        // TODO Step 5: Assign the click event to the Add Dish button.
-        // START
         mBinding.btnAddDish.setOnClickListener(this@AddUpdateDishActivity)
-        // END
     }
 
     override fun onClick(v: View) {
@@ -129,8 +117,6 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
                 return
             }
 
-            // TODO Step 6: Perform the action on button click.
-            // START
             R.id.btn_add_dish -> {
 
                 // Define the local variables and get the EditText values.
@@ -199,18 +185,14 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
                     }
                     else -> {
 
-                        // TODO Step 8: Show the Toast Message for now that you dish entry is valid.
-                        // START
                         Toast.makeText(
                             this@AddUpdateDishActivity,
                             "All the entries are valid.",
                             Toast.LENGTH_SHORT
                         ).show()
-                        // END
                     }
                 }
             }
-            // END
         }
     }
 
@@ -235,23 +217,23 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
 
                 data?.extras?.let {
                     val thumbnail: Bitmap =
-                        data.extras!!.get("data") as Bitmap // Bitmap from camera
+                            data.extras!!.get("data") as Bitmap // Bitmap from camera
 
                     // Set Capture Image bitmap to the imageView using Glide
                     Glide.with(this@AddUpdateDishActivity)
-                        .load(thumbnail)
-                        .centerCrop()
-                        .into(mBinding.ivDishImage)
+                            .load(thumbnail)
+                            .centerCrop()
+                            .into(mBinding.ivDishImage)
 
                     mImagePath = saveImageToInternalStorage(thumbnail)
                     Log.i("ImagePath", mImagePath)
 
                     // Replace the add icon with edit icon once the image is loaded.
                     mBinding.ivAddDishImage.setImageDrawable(
-                        ContextCompat.getDrawable(
-                            this@AddUpdateDishActivity,
-                            R.drawable.ic_vector_edit
-                        )
+                            ContextCompat.getDrawable(
+                                    this@AddUpdateDishActivity,
+                                    R.drawable.ic_vector_edit
+                            )
                     )
                 }
             } else if (requestCode == GALLERY) {
@@ -262,44 +244,44 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
 
                     // Set Selected Image URI to the imageView using Glide
                     Glide.with(this@AddUpdateDishActivity)
-                        .load(selectedPhotoUri)
-                        .centerCrop()
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .listener(object : RequestListener<Drawable> {
-                            override fun onLoadFailed(
-                                @Nullable e: GlideException?,
-                                model: Any?,
-                                target: Target<Drawable>?,
-                                isFirstResource: Boolean
-                            ): Boolean {
-                                // log exception
-                                Log.e("TAG", "Error loading image", e)
-                                return false // important to return false so the error placeholder can be placed
-                            }
+                            .load(selectedPhotoUri)
+                            .centerCrop()
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .listener(object : RequestListener<Drawable> {
+                                override fun onLoadFailed(
+                                        @Nullable e: GlideException?,
+                                        model: Any?,
+                                        target: Target<Drawable>?,
+                                        isFirstResource: Boolean
+                                ): Boolean {
+                                    // log exception
+                                    Log.e("TAG", "Error loading image", e)
+                                    return false // important to return false so the error placeholder can be placed
+                                }
 
-                            override fun onResourceReady(
-                                resource: Drawable,
-                                model: Any?,
-                                target: Target<Drawable>?,
-                                dataSource: DataSource?,
-                                isFirstResource: Boolean
-                            ): Boolean {
+                                override fun onResourceReady(
+                                        resource: Drawable,
+                                        model: Any?,
+                                        target: Target<Drawable>?,
+                                        dataSource: DataSource?,
+                                        isFirstResource: Boolean
+                                ): Boolean {
 
-                                val bitmap: Bitmap = resource.toBitmap()
+                                    val bitmap: Bitmap = resource.toBitmap()
 
-                                mImagePath = saveImageToInternalStorage(bitmap)
-                                Log.i("ImagePath", mImagePath)
-                                return false
-                            }
-                        })
-                        .into(mBinding.ivDishImage)
+                                    mImagePath = saveImageToInternalStorage(bitmap)
+                                    Log.i("ImagePath", mImagePath)
+                                    return false
+                                }
+                            })
+                            .into(mBinding.ivDishImage)
 
                     // Replace the add icon with edit icon once the image is selected.
                     mBinding.ivAddDishImage.setImageDrawable(
-                        ContextCompat.getDrawable(
-                            this@AddUpdateDishActivity,
-                            R.drawable.ic_vector_edit
-                        )
+                            ContextCompat.getDrawable(
+                                    this@AddUpdateDishActivity,
+                                    R.drawable.ic_vector_edit
+                            )
                     )
                 }
             }
@@ -313,11 +295,13 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
      */
     private fun setupActionBar() {
         setSupportActionBar(mBinding.toolbarAddDishActivity)
+
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        mBinding.toolbarAddDishActivity.setNavigationOnClickListener {
-            onBackPressed()
-        }
+        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_arrow_back)
+
+        mBinding.toolbarAddDishActivity.setNavigationOnClickListener { onBackPressed() }
     }
+
 
     /**
      * A function to launch the custom image selection dialog.
@@ -334,71 +318,71 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
 
         binding.tvCamera.setOnClickListener {
 
-            Dexter.withActivity(this@AddUpdateDishActivity)
-                .withPermissions(
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.CAMERA
-                )
-                .withListener(object : MultiplePermissionsListener {
-                    override fun onPermissionsChecked(report: MultiplePermissionsReport?) {
+            Dexter.withContext(this@AddUpdateDishActivity)
+                    .withPermissions(
+                            Manifest.permission.READ_EXTERNAL_STORAGE,
+                            Manifest.permission.CAMERA
+                    )
+                    .withListener(object : MultiplePermissionsListener {
+                        override fun onPermissionsChecked(report: MultiplePermissionsReport?) {
 
-                        report?.let {
-                            // Here after all the permission are granted launch the CAMERA to capture an image.
-                            if (report.areAllPermissionsGranted()) {
+                            report?.let {
+                                // Here after all the permission are granted launch the CAMERA to capture an image.
+                                if (report.areAllPermissionsGranted()) {
 
-                                val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                                startActivityForResult(intent, CAMERA)
+                                    val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                                    startActivityForResult(intent, CAMERA)
+                                }
                             }
                         }
-                    }
 
-                    override fun onPermissionRationaleShouldBeShown(
-                        permissions: MutableList<PermissionRequest>?,
-                        token: PermissionToken?
-                    ) {
-                        showRationalDialogForPermissions()
-                    }
-                }).onSameThread()
-                .check()
+                        override fun onPermissionRationaleShouldBeShown(
+                                permissions: MutableList<PermissionRequest>?,
+                                token: PermissionToken?
+                        ) {
+                            showRationalDialogForPermissions()
+                        }
+                    }).onSameThread()
+                    .check()
 
             dialog.dismiss()
         }
 
         binding.tvGallery.setOnClickListener {
 
-            Dexter.withActivity(this@AddUpdateDishActivity)
-                .withPermission(
-                    Manifest.permission.READ_EXTERNAL_STORAGE
-                )
-                .withListener(object : PermissionListener {
+            Dexter.withContext(this@AddUpdateDishActivity)
+                    .withPermission(
+                            Manifest.permission.READ_EXTERNAL_STORAGE
+                    )
+                    .withListener(object : PermissionListener {
 
-                    override fun onPermissionGranted(response: PermissionGrantedResponse?) {
+                        override fun onPermissionGranted(response: PermissionGrantedResponse?) {
 
-                        // Here after all the permission are granted launch the gallery to select and image.
-                        val galleryIntent = Intent(
-                            Intent.ACTION_PICK,
-                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-                        )
+                            // Here after all the permission are granted launch the gallery to select and image.
+                            val galleryIntent = Intent(
+                                    Intent.ACTION_PICK,
+                                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+                            )
 
-                        startActivityForResult(galleryIntent, GALLERY)
-                    }
+                            startActivityForResult(galleryIntent, GALLERY)
+                        }
 
-                    override fun onPermissionDenied(response: PermissionDeniedResponse?) {
-                        Toast.makeText(
-                            this@AddUpdateDishActivity,
-                            "You have denied the storage permission to select image.",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
+                        override fun onPermissionDenied(response: PermissionDeniedResponse?) {
+                            Toast.makeText(
+                                    this@AddUpdateDishActivity,
+                                    "You have denied the storage permission to select image.",
+                                    Toast.LENGTH_SHORT
+                            ).show()
+                        }
 
-                    override fun onPermissionRationaleShouldBeShown(
-                        permission: PermissionRequest?,
-                        token: PermissionToken?
-                    ) {
-                        showRationalDialogForPermissions()
-                    }
-                }).onSameThread()
-                .check()
+                        override fun onPermissionRationaleShouldBeShown(
+                                permission: PermissionRequest?,
+                                token: PermissionToken?
+                        ) {
+                            showRationalDialogForPermissions()
+                        }
+                    }).onSameThread()
+                    .check()
 
             dialog.dismiss()
         }
@@ -481,7 +465,6 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
      * @param selection - By passing this param you can identify the list item selection.
      */
     private fun customItemsListDialog(title: String, itemsList: List<String>, selection: String) {
-        // TODO Step 2: Replace the dialog variable with the global variable.
         mCustomListDialog = Dialog(this@AddUpdateDishActivity)
 
         val binding: DialogCustomListBinding = DialogCustomListBinding.inflate(layoutInflater)
@@ -502,7 +485,6 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
         mCustomListDialog.show()
     }
 
-    // TODO Step 3: Create a function to set the selected item to the view.
     /**
      * A function to set the selected item to the view.
      *
@@ -528,7 +510,6 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
             }
         }
     }
-    // END
 
     companion object {
         private const val CAMERA = 1

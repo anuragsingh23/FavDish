@@ -1,4 +1,4 @@
-package com.tutorials.eu.favdish.viewmodel
+package com.tutorials.eu.favdish.view.dashboard
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

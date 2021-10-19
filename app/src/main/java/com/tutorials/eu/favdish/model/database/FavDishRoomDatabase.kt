@@ -6,12 +6,19 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.tutorials.eu.favdish.model.entities.FavDish
 
-@Database(entities = [FavDish::class],version = 1)
-abstract  class FavDishRoomDatabase :RoomDatabase(){
+/**
+ * This is the backend. The database. This used to be done by the OpenHelper.
+ * The fact that this has very few comments emphasizes its coolness.
+ */
+@Database(entities = [FavDish::class], version = 1)
+abstract class FavDishRoomDatabase : RoomDatabase() {
 
- abstract fun favDishDao():FavDishDao
+    // TODO Step 4: Create abstract function that we can access from the application class to initialize the repository class.
+    // START
+    abstract fun favDishDao(): FavDishDao
+    // END
 
-    companion object{
+    companion object {
         // Singleton prevents multiple instances of database opening at the
         // same time.
         @Volatile
@@ -24,8 +31,10 @@ abstract  class FavDishRoomDatabase :RoomDatabase(){
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     FavDishRoomDatabase::class.java,
-                    "word_database"
-                ).build()
+                    "fav_dish_database"
+                )
+                    .fallbackToDestructiveMigration()
+                    .build()
                 INSTANCE = instance
                 // return instance
                 instance
