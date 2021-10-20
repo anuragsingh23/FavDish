@@ -1,8 +1,6 @@
 package com.tutorials.eu.favdish.viewmodel
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.tutorials.eu.favdish.model.database.FavDishRepository
 import com.tutorials.eu.favdish.model.entities.FavDish
 import kotlinx.coroutines.launch
@@ -29,8 +27,12 @@ class FavDishViewModel(private val repository: FavDishRepository) : ViewModel() 
         repository.insertFavDishData(dish)
     }
     // END
-}
+
+    val allDishesList: LiveData<List<FavDish>> = repository.allDishesList.asLiveData()
+
+
 // END
+}
 
 /**
  * To create the ViewModel we implement a ViewModelProvider.Factory that gets as a parameter the dependencies
