@@ -120,6 +120,9 @@ class AddUpdateDishActivity : AppCompatActivity(), View.OnClickListener {
             R.id.btn_add_dish -> {
 
                 // Define the local variables and get the EditText values.
+
+
+
                 // For Dish Image we have the global variable defined already.
 
                 val title = mBinding.etTitle.text.toString().trim { it <= ' ' }
