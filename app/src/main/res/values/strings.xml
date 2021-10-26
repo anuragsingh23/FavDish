@@ -43,7 +43,14 @@
 
     <string name="err_msg_enter_dish_cooking_instructions">Enter dish cooking instructions.</string>
 
-    <!--TODO Step 2: Add the string value in the strings.xml value.-->
+
+    <!-- TODO Step 6: Add the string value to the strings.xml-->
+
+
+    <!--START-->
+
+
+    <string name="lbl_estimate_cooking_time">The approx time required to cook the dish is %1$s minutes.</string>
 
 
     <!--START-->
