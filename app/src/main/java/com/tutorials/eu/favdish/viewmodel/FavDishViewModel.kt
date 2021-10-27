@@ -6,7 +6,6 @@ import com.tutorials.eu.favdish.model.entities.FavDish
 import kotlinx.coroutines.launch
 
 // TODO Step 1: Create a Kotlin class file name as FavDishViewModel.
-// START
 /**
  * The ViewModel's role is to provide data to the UI and survive configuration changes.
  * A ViewModel acts as a communication center between the Repository and the UI.
@@ -26,12 +25,16 @@ class FavDishViewModel(private val repository: FavDishRepository) : ViewModel() 
         // Call the repository function and pass the details.
         repository.insertFavDishData(dish)
     }
-    // END
 
     val allDishesList: LiveData<List<FavDish>> = repository.allDishesList.asLiveData()
 
 
-// END
+    fun  update(dish: FavDish)=viewModelScope.launch {
+        repository.updateFavDishData(dish)
+    }
+
+    val favoriteDishes: LiveData<List<FavDish>> = repository.favoriteDishes.asLiveData()
+
 }
 
 /**
@@ -41,6 +44,8 @@ class FavDishViewModel(private val repository: FavDishRepository) : ViewModel() 
  * It will survive configuration changes and even if the Activity is recreated,
  * you'll always get the right instance of the FavDishViewModel class.
  */
+
+
 // TODO Step 3: Create a ViewModelFactory provider class.
 // START
 class FavDishViewModelFactory(private val repository: FavDishRepository) : ViewModelProvider.Factory {
@@ -51,5 +56,7 @@ class FavDishViewModelFactory(private val repository: FavDishRepository) : ViewM
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
+
+
 }
 // END

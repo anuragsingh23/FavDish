@@ -23,4 +23,10 @@ interface FavDishDao {
 
     @Query("SELECT * FROM FAV_DISHES_TABLE ORDER BY ID")
     fun getAllDishesList() : Flow<List<FavDish>>
+
+    @Update
+    suspend fun updateFavDishDetails(favDish: FavDish)
+
+    @Query("SELECT * FROM FAV_DISHES_TABLE WHERE favorite_dish = 1")
+    fun getFavouriteDishesList():Flow<List<FavDish>>
 }
