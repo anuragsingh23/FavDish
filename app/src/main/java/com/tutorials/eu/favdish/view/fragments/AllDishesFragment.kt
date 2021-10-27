@@ -1,6 +1,7 @@
 package com.tutorials.eu.favdish.view.fragments
 
 import android.app.AlertDialog
+import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -14,12 +15,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.tutorials.eu.favdish.R
 import com.tutorials.eu.favdish.application.FavDishApplication
+import com.tutorials.eu.favdish.databinding.DialogCustomListBinding
 import com.tutorials.eu.favdish.databinding.FragmentAllDishesBinding
 import com.tutorials.eu.favdish.model.entities.FavDish
+import com.tutorials.eu.favdish.utils.Constants
 import com.tutorials.eu.favdish.view.activities.AddUpdateDishActivity
 import com.tutorials.eu.favdish.view.activities.MainActivity
+import com.tutorials.eu.favdish.view.adapters.CustomListItemAdapter
 import com.tutorials.eu.favdish.view.adapters.FavDishAdapter
 import com.tutorials.eu.favdish.viewmodel.FavDishViewModel
 import com.tutorials.eu.favdish.viewmodel.FavDishViewModelFactory
@@ -109,6 +114,23 @@ class AllDishesFragment : Fragment() {
         }
     }
 
+    private fun filterDishesListDialog(){
+        val customListDialog =Dialog(requireActivity())
+        val binding :DialogCustomListBinding= DialogCustomListBinding.inflate(layoutInflater)
+
+        customListDialog.setContentView(binding.root)
+        binding.tvTitle.text=resources.getString(R.string.title_select_item_to_filter)
+        val dishTypes=Constants.dishTypes()
+        dishTypes.add(0,Constants.ALL_ITEMS)
+        binding.rvList.layoutManager=LinearLayoutManager(requireActivity())
+
+        val adapter=CustomListItemAdapter(requireActivity(),dishTypes,Constants.FILTER_SELECTION)
+        binding.rvList.adapter=adapter
+        customListDialog.show()
+
+
+    }
+
     override fun onResume() {
         super.onResume()
         if (activity is MainActivity){
@@ -126,6 +148,10 @@ class AllDishesFragment : Fragment() {
         when (item.itemId) {
             R.id.action_add_dish -> {
                 startActivity(Intent(requireActivity(), AddUpdateDishActivity::class.java))
+                return true
+            }
+            R.id.actiom_filter_dishes ->{
+                filterDishesListDialog()
                 return true
             }
         }
