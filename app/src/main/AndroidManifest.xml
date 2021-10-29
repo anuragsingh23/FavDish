@@ -2,9 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.tutorials.eu.favdish">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <!--For WRITE EXTERNAL STORAGE warning you can have a look at this article I hope it will clear your doubt.
-        https://www.raywenderlich.com/9577211-scoped-storage-in-android-10-getting-started -->
+
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28" />
@@ -13,7 +13,7 @@
     <uses-feature android:name="android.hardware.camera"
         android:required="true" />
 
-    <!--TODO Step 7: Link the application class with application. Add the name parameter in the application tag as below.-->
+
     <application
         android:name=".application.FavDishApplication"
         android:allowBackup="true"
