@@ -49,6 +49,9 @@
     <string name="lbl_estimate_cooking_time">The approx time required to cook the dish is %1$s minutes.</string>
 
 
+    <string name="msg_already_added_to_favorites">you have already added this dish to your favorites.</string>
+    <string name="please_wait">Please Wait…</string>
+
     <!--START-->
 
 
