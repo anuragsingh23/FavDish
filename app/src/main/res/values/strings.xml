@@ -77,6 +77,7 @@
     <string name="action_filter_dishes">Filter Dishes</string>
 
     <string name="title_select_item_to_filter">SELECT ITEM TO FILTER</string>
+    <string name="action_share_dish">Share Dish</string>
 
     <!--END-->
 
